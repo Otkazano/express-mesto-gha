@@ -1,15 +1,15 @@
-// {
-// 	"extends": "airbnb-base",
-// 	"rules": {
-// 		"no-underscore-dangle": ["error", { "allow": ["_id", ".js"] }],
-// 		"react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }]
-// 	},
-// 	"plugins": [
-//     "react",
-//     "jsx-a11y",
-//     "import"
-//   ],
-// 	"resolve": {
-//     "extensions": [".js", ".jsx"]
-// 	}
-// }
+{
+	"extends": "airbnb-base",
+	"rules": {
+		"no-underscore-dangle": ["error", { "allow": ["_id", ".js"] }],
+		"react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }]
+	},
+	"plugins": [
+    "react",
+    "jsx-a11y",
+    "import"
+  ],
+	"resolve": {
+    "extensions": [".js", ".jsx"]
+	}
+}
