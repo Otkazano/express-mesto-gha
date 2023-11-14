@@ -1,7 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
-import router from './routes/index';
+import router from './routes/index.js';
 
 const { PORT = 3000 } = process.env;
 const DB_URL = 'mongodb://localhost:27017/mestodb ';
