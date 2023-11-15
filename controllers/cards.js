@@ -55,14 +55,11 @@ export const deleteCard = async (req, res) => {
 
 export const likeCard = async (req, res) => {
   try {
-    if (!req.params.cardId) {
-      throw new Error('NotFound');
-    }
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
       { $addToSet: { likes: req.user._id } },
       { new: true },
-    );
+    ).orFail(new Error('NotFound'));
     return res.send(card);
   } catch (error) {
     if (error.name === 'CastError') {
