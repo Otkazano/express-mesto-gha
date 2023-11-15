@@ -14,8 +14,8 @@
 ## Запуск проекта
 
 `npm i` - установка зависимостей  
-`mongod` — запускает mongoDB
-`npm run start` — запускает сервер   
+`mongod` — запускает mongoDB  
+`npm run start` — запускает сервер     
 `npm run dev` — запускает сервер с hot-reload
 
 ## [Ссылка на репозиторий](https://github.com/Otkazano/express-mesto-gha) 
