@@ -31,10 +31,9 @@ export const createCard = async (req, res) => {
 
 export const deleteCard = async (req, res) => {
   try {
-    if (!req.params.cardId) {
-      throw new Error('NotFound');
-    }
-    const card = await Card.findByIdAndDelete(req.params.cardId);
+    const card = await Card.findByIdAndDelete(req.params.cardId).orFail(
+      new Error('NotFound'),
+    );
     return res.send(card);
   } catch (error) {
     if (error.name === 'CastError') {
