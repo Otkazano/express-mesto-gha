@@ -81,11 +81,6 @@ export const updateInfoProfile = async (req, res) => {
         .status(StatusCodes.NOT_FOUND)
         .send({ message: 'Пользователь не найден' });
     }
-    if (error instanceof mongoose.Error.CastError) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .send({ message: 'Переданы неверные данные', ...error });
-    }
     if (error instanceof mongoose.Error.ValidationError) {
       return res
         .status(StatusCodes.BAD_REQUEST)
@@ -100,9 +95,6 @@ export const updateInfoProfile = async (req, res) => {
 
 export const updateAvatarProfile = async (req, res) => {
   try {
-    if (!req.user._id) {
-      throw new Error('NotFound');
-    }
     const { avatar } = req.body;
     const updatedInfo = await User.findByIdAndUpdate(
       req.user._id,
@@ -118,11 +110,6 @@ export const updateAvatarProfile = async (req, res) => {
       return res
         .status(StatusCodes.NOT_FOUND)
         .send({ message: 'Пользователь не найден' });
-    }
-    if (error instanceof mongoose.Error.CastError) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .send({ message: 'Переданы неверные данные', ...error });
     }
     if (error instanceof mongoose.Error.ValidationError) {
       return res
