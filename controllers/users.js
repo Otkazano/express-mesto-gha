@@ -1,4 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
+import mongoose from 'mongoose';
 import User from '../models/User.js';
 
 const ERROR_CODE_DUPLICATE_MONGO = 11000;
@@ -17,18 +18,15 @@ export const getUsers = async (req, res) => {
 export const getUserById = async (req, res) => {
   try {
     const { userId } = req.params;
-    const user = await User.findById(userId);
-    if (!user) {
-      throw new Error('NotFound');
-    }
+    const user = await User.findById(userId).orFail();
     return res.status(StatusCodes.OK).send(user);
   } catch (error) {
-    if (error.name === 'CastError') {
+    if (error instanceof mongoose.Error.CastError) {
       return res
         .status(StatusCodes.BAD_REQUEST)
         .send({ message: 'Переданы неверные данные', ...error });
     }
-    if (error.message === 'NotFound') {
+    if (error instanceof mongoose.Error.DocumentNotFoundError) {
       return res
         .status(StatusCodes.NOT_FOUND)
         .send({ message: 'Пользователь не найден' });
@@ -47,7 +45,7 @@ export const createUser = async (req, res) => {
 
     return res.status(StatusCodes.CREATED).send(await newUser.save());
   } catch (error) {
-    if (error.name === 'ValidationError') {
+    if (error instanceof mongoose.Error.ValidationError) {
       return res
         .status(StatusCodes.BAD_REQUEST)
         .send({ message: 'Переданы неверные данные', ...error });
@@ -75,15 +73,20 @@ export const updateInfoProfile = async (req, res) => {
         new: true,
         runValidators: true,
       },
-    );
+    ).orFail();
     return res.json(updatedInfo);
   } catch (error) {
-    if (error.message === 'NotFound') {
+    if (error instanceof mongoose.Error.DocumentNotFoundError) {
       return res
         .status(StatusCodes.NOT_FOUND)
         .send({ message: 'Пользователь не найден' });
     }
-    if (error.name === 'ValidationError') {
+    if (error instanceof mongoose.Error.CastError) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .send({ message: 'Переданы неверные данные', ...error });
+    }
+    if (error instanceof mongoose.Error.ValidationError) {
       return res
         .status(StatusCodes.BAD_REQUEST)
         .send({ message: 'Переданы неверные данные', ...error });
@@ -108,15 +111,20 @@ export const updateAvatarProfile = async (req, res) => {
         new: true,
         runValidators: true,
       },
-    );
+    ).orFail();
     return res.json(updatedInfo);
   } catch (error) {
-    if (error.message === 'NotFound') {
+    if (error instanceof mongoose.Error.DocumentNotFoundError) {
       return res
         .status(StatusCodes.NOT_FOUND)
         .send({ message: 'Пользователь не найден' });
     }
-    if (error.name === 'ValidationError') {
+    if (error instanceof mongoose.Error.CastError) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .send({ message: 'Переданы неверные данные', ...error });
+    }
+    if (error instanceof mongoose.Error.ValidationError) {
       return res
         .status(StatusCodes.BAD_REQUEST)
         .send({ message: 'Переданы неверные данные', ...error });

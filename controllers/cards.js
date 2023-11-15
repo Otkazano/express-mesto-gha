@@ -1,4 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
+import mongoose from 'mongoose';
 import Card from '../models/Card.js';
 
 export const getCards = async (req, res) => {
@@ -18,7 +19,7 @@ export const createCard = async (req, res) => {
     const newCard = await new Card({ name, link, owner: req.user._id });
     return res.status(StatusCodes.CREATED).send(await newCard.save());
   } catch (error) {
-    if (error.name === 'ValidationError') {
+    if (error instanceof mongoose.Error.ValidationError) {
       return res
         .status(StatusCodes.BAD_REQUEST)
         .send({ message: 'Переданы неверные данные', ...error });
@@ -31,17 +32,15 @@ export const createCard = async (req, res) => {
 
 export const deleteCard = async (req, res) => {
   try {
-    const card = await Card.findByIdAndDelete(req.params.cardId).orFail(
-      new Error('NotFound'),
-    );
+    const card = await Card.findByIdAndDelete(req.params.cardId).orFail();
     return res.send(card);
   } catch (error) {
-    if (error.name === 'CastError') {
+    if (error instanceof mongoose.Error.CastError) {
       return res
         .status(StatusCodes.BAD_REQUEST)
         .send({ message: 'Переданы неверные данные', ...error });
     }
-    if (error.message === 'NotFound') {
+    if (error instanceof mongoose.Error.DocumentNotFoundError) {
       return res
         .status(StatusCodes.NOT_FOUND)
         .send({ message: 'Карточка не найдена' });
@@ -58,15 +57,15 @@ export const likeCard = async (req, res) => {
       req.params.cardId,
       { $addToSet: { likes: req.user._id } },
       { new: true },
-    ).orFail(new Error('NotFound'));
+    ).orFail();
     return res.send(card);
   } catch (error) {
-    if (error.name === 'CastError') {
+    if (error instanceof mongoose.Error.CastError) {
       return res
         .status(StatusCodes.BAD_REQUEST)
         .send({ message: 'Переданы неверные данные', ...error });
     }
-    if (error.message === 'NotFound') {
+    if (error instanceof mongoose.Error.DocumentNotFoundError) {
       return res
         .status(StatusCodes.NOT_FOUND)
         .send({ message: 'Карточка не найдена' });
@@ -83,15 +82,15 @@ export const dislikeCard = async (req, res) => {
       req.params.cardId,
       { $pull: { likes: req.user._id } },
       { new: true },
-    ).orFail(new Error('NotFound'));
+    ).orFail();
     return res.send(card);
   } catch (error) {
-    if (error.name === 'CastError') {
+    if (error instanceof mongoose.Error.CastError) {
       return res
         .status(StatusCodes.BAD_REQUEST)
         .send({ message: 'Переданы неверные данные', ...error });
     }
-    if (error.message === 'NotFound') {
+    if (error instanceof mongoose.Error.DocumentNotFoundError) {
       return res
         .status(StatusCodes.NOT_FOUND)
         .send({ message: 'Карточка не найдена' });
