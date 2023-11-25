@@ -16,6 +16,18 @@ const auth = async (req, res, next) => {
   try {
     payload = Jwt.verify(token, NODE_ENV ? JWT_SECRET : 'super-secret');
   } catch (error) {
+    if (error.name === 'JsonWebTokenError') {
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .send({ message: 'С токеном что-то не так', error: error.message });
+    }
+
+    if (error.name === 'TokenExpiredError') {
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .send({ message: 'Срок действия токена истек', error: error.message });
+    }
+
     return res
       .status(StatusCodes.UNAUTHORIZED)
       .send({ message: 'Необходима авторизация', error: error.message });

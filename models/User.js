@@ -1,7 +1,6 @@
-import mongoose from 'mongoose'
-import bcrypt from 'bcryptjs'
-import validator from 'validator'
-import { URLExpression } from '../utils/constants.js'
+import mongoose from 'mongoose';
+import validator from 'validator';
+import { URLExpression } from '../utils/constants.js';
 
 const userScheme = new mongoose.Schema(
   {
@@ -9,38 +8,38 @@ const userScheme = new mongoose.Schema(
       type: String,
       minlength: 2,
       maxlength: 30,
-      default: 'Жак-Ив Кусто'
+      default: 'Жак-Ив Кусто',
     },
     about: {
       type: String,
       minlength: 2,
       maxlength: 30,
-      default: 'Исследователь'
+      default: 'Исследователь',
     },
     avatar: {
       type: String,
       default:
         'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
-      match: [URLExpression, 'Некорректный URL']
+      match: [URLExpression, 'Некорректный URL'],
     },
     email: {
       type: String,
       required: true,
       unique: true,
       validator: {
-        validator: v => validator.isEmail(v),
-        message: 'Неправильный формат'
-      }
+        validator: (v) => validator.isEmail(v),
+        message: 'Неправильный формат',
+      },
     },
     password: {
       type: String,
       required: true,
       minlength: 8,
       maxlength: 64,
-      select: false
-    }
+      select: false,
+    },
   },
-  { versionKey: false }
-)
+  { versionKey: false },
+);
 
-export default mongoose.model('user', userScheme)
+export default mongoose.model('user', userScheme);

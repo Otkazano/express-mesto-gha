@@ -1,5 +1,5 @@
-import mongoose from 'mongoose'
-import { URLExpression } from '../utils/constants.js'
+import mongoose from 'mongoose';
+import { URLExpression } from '../utils/constants.js';
 
 const cardScheme = new mongoose.Schema(
   {
@@ -7,33 +7,33 @@ const cardScheme = new mongoose.Schema(
       type: String,
       minlength: 2,
       maxlength: 30,
-      required: true
+      required: true,
     },
     link: {
       type: String,
       required: true,
-      match: [URLExpression, 'Некорректный URL']
+      match: [URLExpression, 'Некорректный URL'],
     },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'user',
-      required: true
+      required: true,
     },
     likes: {
       type: [
         {
           type: mongoose.Schema.Types.ObjectId,
-          ref: 'user'
-        }
+          ref: 'user',
+        },
       ],
-      default: []
+      default: [],
     },
     createdAt: {
       type: Date,
-      default: Date.now
-    }
+      default: Date.now,
+    },
   },
-  { versionKey: false }
-)
+  { versionKey: false },
+);
 
-export default mongoose.model('card', cardScheme)
+export default mongoose.model('card', cardScheme);
