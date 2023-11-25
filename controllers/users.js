@@ -18,7 +18,7 @@ export const login = async (req, res) => {
       throw new Error('NotAutanticate');
     }
     const token = generateToken({ _id: user._id });
-    return res.status(StatusCodes.OK).send({ token });
+    return res.send({ token });
   } catch (error) {
     if (error.message === 'NotAutanticate') {
       return res.status(StatusCodes.UNAUTHORIZED).send({
