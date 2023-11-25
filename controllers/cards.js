@@ -34,7 +34,7 @@ export const deleteCard = async (req, res) => {
   try {
     const card = await Card.findById(req.params.cardId).orFail();
     if (!card.owner.equals(req.user._id)) {
-      throw new Error('Автор карточки - другой пользователь');
+      throw new Error('NotOwner');
     }
     return Card.deleteOne(card)
       .orFail()
@@ -52,10 +52,10 @@ export const deleteCard = async (req, res) => {
         .status(StatusCodes.NOT_FOUND)
         .send({ message: 'Карточка не найдена' });
     }
-    if (error === 'Автор карточки - другой пользователь') {
+    if (error === 'NotOwner') {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .send({ message: 'KJHSGDFKJHSDKFHSKD', ...error });
+        .send({ message: 'Автор карточки - другой пользователь', ...error });
     }
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
