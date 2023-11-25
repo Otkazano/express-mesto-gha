@@ -29,11 +29,11 @@ export const createUser = async (req, res) => {
     return res
       .status(StatusCodes.CREATED)
       .send({
-        name: user.name,
-        about: user.about,
-        avatar: user.avatar,
-        _id: user._id,
-        email: user.email
+        name: newUser.name,
+        about: newUser.about,
+        avatar: newUser.avatar,
+        _id: newUser._id,
+        email: newUser.email
       })
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
