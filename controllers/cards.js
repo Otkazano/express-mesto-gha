@@ -33,7 +33,7 @@ export const createCard = async (req, res) => {
 export const deleteCard = async (req, res) => {
   try {
     const card = await Card.findById(req.params.cardId).orFail();
-    if (!card.owner.equals(req.user._id)) {
+    if (card.owner.toString() !== req.user._id) {
       throw new Error('NotOwner');
     }
     return Card.deleteOne(card)
