@@ -34,7 +34,9 @@ export const deleteCard = async (req, res) => {
   try {
     const card = await Card.findById(req.params.cardId).orFail();
     if (card.owner.toString() !== req.user._id) {
-      throw new Error('NotOwner');
+      return res
+        .status(StatusCodes.Forbidden)
+        .send({ message: 'Автор карточки - другой пользователь', ...error });
     }
     return Card.deleteOne(card)
       .orFail()
@@ -51,11 +53,6 @@ export const deleteCard = async (req, res) => {
       return res
         .status(StatusCodes.NOT_FOUND)
         .send({ message: 'Карточка не найдена' });
-    }
-    if (error === 'NotOwner') {
-      return res
-        .status(StatusCodes.Forbidden)
-        .send({ message: 'Автор карточки - другой пользователь', ...error });
     }
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
