@@ -54,7 +54,7 @@ export const deleteCard = async (req, res) => {
     }
     if (error === 'NotOwner') {
       return res
-        .status(StatusCodes.BAD_REQUEST)
+        .status(StatusCodes.Forbidden)
         .send({ message: 'Автор карточки - другой пользователь', ...error });
     }
     return res
