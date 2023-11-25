@@ -19,7 +19,7 @@ const auth = (req, res, next) => {
     if (error.name === 'JsonWebTokenError') {
       return res
         .status(StatusCodes.UNAUTHORIZED)
-        .send({ message: 'С токеном что-то не dasdadassdтак', error: error.message });
+        .send({ message: 'С токеном что-то не так', error: error.message });
     }
 
     if (error.name === 'TokenExpiredError') {
