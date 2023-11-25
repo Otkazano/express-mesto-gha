@@ -35,8 +35,8 @@ export const deleteCard = async (req, res) => {
     const card = await Card.findById(req.params.cardId).orFail();
     if (card.owner.toString() !== req.user._id) {
       return res
-        .status(StatusCodes.Forbidden)
-        .send({ message: 'Автор карточки - другой пользователь', ...error });
+        .status(StatusCodes.FORBIDDEN)
+        .send({ message: 'Автор карточки - другой пользователь' });
     }
     return Card.deleteOne(card)
       .orFail()
