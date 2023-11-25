@@ -8,11 +8,19 @@ import { ERROR_CODE_DUPLICATE_MONGO, SALT_ROUNDS } from '../utils/constants.js'
 export const login = async (req, res) => {
   const { email, password } = req.body
   try {
-    return User.findUserByCredentials(email, password).then(user => {
-      res.send({
-        token: generateToken({ _id: user._id })
-      })
+
+    const user = await User.findOne({ email })
+      .select('+password')
+      .orFail()
+    const matched = bcrypt.compare(String(password), user.password)
+    if (!matched) {
+      throw new Error('Неправильная почта или пароль')
+    }
+    const token = generateToken({ _id: user._id })
+    return res.send({
+      token: token
     })
+
   } catch (error) {
     return res
       .status(StatusCodes.UNAUTHORIZED)
@@ -26,15 +34,13 @@ export const createUser = async (req, res) => {
       .hash(req.body.password, SALT_ROUNDS)
       .then(hash => User.create({ ...req.body, password: hash }))
 
-    return res
-      .status(StatusCodes.CREATED)
-      .send({
-        name: newUser.name,
-        about: newUser.about,
-        avatar: newUser.avatar,
-        _id: newUser._id,
-        email: newUser.email
-      })
+    return res.status(StatusCodes.CREATED).send({
+      name: newUser.name,
+      about: newUser.about,
+      avatar: newUser.avatar,
+      _id: newUser._id,
+      email: newUser.email
+    })
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
       return res
