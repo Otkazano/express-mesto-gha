@@ -13,8 +13,8 @@ import userInfoValidate from '../middlewares/userInfoValidate.js';
 const userRouter = Router();
 
 userRouter.get('/', getUsers);
-userRouter.get('/:userId', getUserById);
-userRouter.get('/me', userIDValidate, getCurrentUser);
+userRouter.get('/:userId', userIDValidate, getUserById);
+userRouter.get('/me', getCurrentUser);
 userRouter.patch('/me', userInfoValidate, updateInfoProfile);
 userRouter.patch('/me/avatar', userAvatarValidate, updateAvatarProfile);
 
