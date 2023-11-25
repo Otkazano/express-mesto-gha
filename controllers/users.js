@@ -24,7 +24,7 @@ export const createUser = async (req, res) => {
   try {
     const newUser = await bcrypt
       .hash(req.body.password, SALT_ROUNDS)
-      .then(hash => new User({ ...req.body, password: hash }))
+      .then(hash => User.create({ ...req.body, password: hash }))
 
     return res
       .status(StatusCodes.CREATED)
