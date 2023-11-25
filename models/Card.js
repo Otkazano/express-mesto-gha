@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { URLExpression } from '../utils/constants.js';
 
 const cardScheme = new mongoose.Schema({
   name: {
@@ -10,6 +11,7 @@ const cardScheme = new mongoose.Schema({
   link: {
     type: String,
     required: true,
+    match: [URLExpression, 'Некорректный URL'],
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,

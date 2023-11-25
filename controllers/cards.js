@@ -32,8 +32,15 @@ export const createCard = async (req, res) => {
 
 export const deleteCard = async (req, res) => {
   try {
-    const card = await Card.findByIdAndDelete(req.params.cardId).orFail();
-    return res.send(card);
+    const card = await Card.findById(req.params.cardId).orFail();
+    if (!card.owner.equals(req.user._id)) {
+      throw new Error('Автор карточки - другой пользователь');
+    }
+    return Card.deleteOne(card)
+      .orFail()
+      .then(() => {
+        res.send({ message: 'Карточка удалена' });
+      });
   } catch (error) {
     if (error instanceof mongoose.Error.CastError) {
       return res
@@ -44,6 +51,11 @@ export const deleteCard = async (req, res) => {
       return res
         .status(StatusCodes.NOT_FOUND)
         .send({ message: 'Карточка не найдена' });
+    }
+    if (error === 'Автор карточки - другой пользователь') {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .send({ message: 'KJHSGDFKJHSDKFHSKD', ...error });
     }
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)

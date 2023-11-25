@@ -1,23 +1,13 @@
-import express from 'express';
+import express, { json } from 'express';
+import 'dotenv/config';
 import mongoose from 'mongoose';
-import bodyParser from 'body-parser';
 import router from './routes/index.js';
 
-const { PORT = 3000 } = process.env;
-const DB_URL = 'mongodb://localhost:27017/mestodb ';
+const { PORT = 3000, DB_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
 
 const app = express();
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-app.use((req, res, next) => {
-  req.user = {
-    _id: '65532fdbf756804b5649fa36',
-  };
-
-  next();
-});
+app.use(json());
 
 async function startApp() {
   try {
