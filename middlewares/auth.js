@@ -24,4 +24,4 @@ const auth = async (req, res, next) => {
   return next();
 };
 
-export default { auth };
+export default auth;
