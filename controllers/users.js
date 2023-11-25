@@ -18,17 +18,13 @@ export const login = async (req, res) => {
       throw new Error('NotAutanticate');
     }
     const token = generateToken({ _id: user._id });
-    return res.send({
-      token,
-    });
+    return res.status(StatusCodes.OK).send({ token });
   } catch (error) {
     if (error.message === 'NotAutanticate') {
-      return res
-        .status(StatusCodes.UNAUTHORIZED)
-        .send({
-          message: 'Неправильные почта или пароль',
-          error: error.message,
-        });
+      return res.status(StatusCodes.UNAUTHORIZED).send({
+        message: 'Неправильные почта или пароль',
+        error: error.message,
+      });
     }
 
     return res
