@@ -7,12 +7,13 @@ const auth = (req, res, next) => {
   let payload;
   try {
     const token = req.headers.authorization;
+
     if (!token) {
       return res
         .status(StatusCodes.UNAUTHORIZED)
         .send({ message: 'Необходима авторизация' });
     }
-    const validToken = token.replace('Bearer', '');
+    const validToken = token.replace('Bearer ', '');
     payload = Jwt.verify(validToken, NODE_ENV ? JWT_SECRET : 'super-secret');
   } catch (error) {
     if (error.name === 'JsonWebTokenError') {
