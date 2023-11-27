@@ -1,5 +1,5 @@
-import { StatusCodes } from 'http-status-codes';
 import Jwt from 'jsonwebtoken';
+import ApiError from '../utils/ApiError.js';
 
 const { JWT_SECRET, NODE_ENV } = process.env;
 
@@ -9,28 +9,20 @@ const auth = (req, res, next) => {
     const token = req.headers.authorization;
 
     if (!token) {
-      return res
-        .status(StatusCodes.UNAUTHORIZED)
-        .send({ message: 'Необходима авторизация' });
+      return next(ApiError.Unauthorized('Необходима авторизация'));
     }
     const validToken = token.replace('Bearer ', '');
     payload = Jwt.verify(validToken, NODE_ENV ? JWT_SECRET : 'super-secret');
   } catch (error) {
     if (error.name === 'JsonWebTokenError') {
-      return res
-        .status(StatusCodes.UNAUTHORIZED)
-        .send({ message: 'С токеном что-то не так', error: error.message });
+      return next(ApiError.Unauthorized('С токеном что-то не так'));
     }
 
     if (error.name === 'TokenExpiredError') {
-      return res
-        .status(StatusCodes.UNAUTHORIZED)
-        .send({ message: 'Срок действия токена истек', error: error.message });
+      return next(ApiError.Unauthorized('Срок действия токена истек'));
     }
 
-    return res
-      .status(StatusCodes.UNAUTHORIZED)
-      .send({ message: 'Необходима авторизация', error: error.message });
+    return new ApiError();
   }
   req.user = payload;
   return next();

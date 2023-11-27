@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import User from '../models/User.js';
 import generateToken from '../utils/jwt.js';
 import { ERROR_CODE_DUPLICATE_MONGO, SALT_ROUNDS } from '../utils/constants.js';
+import ApiError from '../utils/ApiError.js';
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
@@ -21,15 +22,10 @@ export const login = async (req, res) => {
     return res.send({ token });
   } catch (error) {
     if (error.message === 'NotAutanticate') {
-      return res.status(StatusCodes.UNAUTHORIZED).send({
-        message: 'Неправильные почта или пароль',
-        error: error.message,
-      });
+      return new ApiError.Unauthorized('Неправильные почта или пароль');
     }
 
-    return res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .send({ message: 'Ошибка на стороне сервера', error: error.message });
+    return new ApiError();
   }
 };
 
@@ -48,20 +44,14 @@ export const createUser = async (req, res) => {
     });
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .send({ message: 'Переданы неверные данные', ...error });
+      return new ApiError.BadRequest('Переданы неверные данные');
     }
 
     if (error.code === ERROR_CODE_DUPLICATE_MONGO) {
-      return res
-        .status(StatusCodes.CONFLICT)
-        .send({ message: 'Пользователь уже существует' });
+      return new ApiError.Conflict('Пользователь уже существует');
     }
 
-    return res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .send({ message: 'Ошибка на стороне сервера', error: error.message });
+    return new ApiError();
   }
 };
 
@@ -70,9 +60,7 @@ export const getUsers = async (req, res) => {
     const users = await User.find({});
     return res.send(users);
   } catch (error) {
-    return res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .send({ message: 'Ошибка на стороне севера', error: error.message });
+    return new ApiError();
   }
 };
 
@@ -82,19 +70,13 @@ export const getCurrentUser = async (req, res) => {
     return res.status(StatusCodes.OK).send(user);
   } catch (error) {
     if (error instanceof mongoose.Error.CastError) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .send({ message: 'Переданы неверные данные', ...error });
+      return new ApiError.BadRequest('Переданы неверные данные');
     }
     if (error instanceof mongoose.Error.DocumentNotFoundError) {
-      return res
-        .status(StatusCodes.NOT_FOUND)
-        .send({ message: 'Пользователь не найден' });
+      return new ApiError.NotFound('Пользователь не найден');
     }
 
-    return res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .send({ message: 'Ошибка на стороне сервера', error: error.message });
+    return new ApiError();
   }
 };
 
@@ -105,19 +87,13 @@ export const getUserById = async (req, res) => {
     return res.status(StatusCodes.OK).send(user);
   } catch (error) {
     if (error instanceof mongoose.Error.CastError) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .send({ message: 'Переданы неверные данные', ...error });
+      return new ApiError.BadRequest('Переданы неверные данные');
     }
     if (error instanceof mongoose.Error.DocumentNotFoundError) {
-      return res
-        .status(StatusCodes.NOT_FOUND)
-        .send({ message: 'Пользователь не найден' });
+      return new ApiError.NotFound('Пользователь не найден');
     }
 
-    return res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .send({ message: 'Ошибка на стороне сервера', error: error.message });
+    return new ApiError();
   }
 };
 
@@ -135,19 +111,13 @@ export const updateInfoProfile = async (req, res) => {
     return res.json(updatedInfo);
   } catch (error) {
     if (error instanceof mongoose.Error.DocumentNotFoundError) {
-      return res
-        .status(StatusCodes.NOT_FOUND)
-        .send({ message: 'Пользователь не найден' });
+      return new ApiError.NotFound('Пользователь не найден');
     }
     if (error instanceof mongoose.Error.ValidationError) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .send({ message: 'Переданы неверные данные', ...error });
+      return new ApiError.BadRequest('Переданы неверные данные');
     }
 
-    return res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .send({ message: 'Ошибка на стороне севера', error: error.message });
+    return new ApiError();
   }
 };
 
@@ -165,18 +135,12 @@ export const updateAvatarProfile = async (req, res) => {
     return res.json(updatedInfo);
   } catch (error) {
     if (error instanceof mongoose.Error.DocumentNotFoundError) {
-      return res
-        .status(StatusCodes.NOT_FOUND)
-        .send({ message: 'Пользователь не найден' });
+      return new ApiError.NotFound('Пользователь не найден');
     }
     if (error instanceof mongoose.Error.ValidationError) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .send({ message: 'Переданы неверные данные', ...error });
+      return new ApiError.BadRequest('Переданы неверные данные');
     }
 
-    return res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .send({ message: 'Ошибка на стороне севера', error: error.message });
+    return new ApiError();
   }
 };

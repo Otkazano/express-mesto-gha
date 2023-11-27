@@ -7,6 +7,6 @@ export default celebrate({
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().pattern(new RegExp(URLExpression)),
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(3),
+    password: Joi.string().required().min(8),
   }),
 });
