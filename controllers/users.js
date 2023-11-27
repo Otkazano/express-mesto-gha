@@ -14,7 +14,7 @@ export const login = async (req, res, next) => {
       .orFail(() => {
         throw new Error('NotAutanticate');
       });
-    const matched = bcrypt.compare(String(password), user.password);
+    const matched = await bcrypt.compare(String(password), user.password);
     if (!matched) {
       throw new Error('NotAutanticate');
     }
