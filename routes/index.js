@@ -15,7 +15,7 @@ router.post('/signup', userAuthValidate, createUser);
 router.use('/users', auth, userRouter);
 router.use('/cards', auth, cardRouter);
 router.use('*', auth, (req, res, next) => {
-  next(ApiError.NotFound('Страница не найдена'));
+  next(new ApiError.NotFound('Страница не найдена'));
 });
 router.use(errors());
 router.use(globalErrorHandler);

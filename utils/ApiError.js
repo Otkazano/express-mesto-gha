@@ -12,11 +12,11 @@ export default class ApiError extends Error {
   }
 
   static Unauthorized(message) {
-    return new ApiError(StatusCodes.Unauthorized, message);
+    return new ApiError(StatusCodes.UNAUTHORIZED, message);
   }
 
   static Forbidden(message) {
-    return new ApiError(StatusCodes.Forbidden, message);
+    return new ApiError(StatusCodes.FORBIDDEN, message);
   }
 
   static NotFound(message) {
@@ -24,6 +24,6 @@ export default class ApiError extends Error {
   }
 
   static Conflict(message) {
-    return new ApiError(StatusCodes.Conflict, message);
+    return new ApiError(StatusCodes.CONFLICT, message);
   }
 }

@@ -9,7 +9,7 @@ const auth = (req, res, next) => {
     const token = req.headers.authorization;
 
     if (!token) {
-      return next(ApiError.Unauthorized('Необходима авторизация'));
+      throw new Error('NeedsAutanticate');
     }
     const validToken = token.replace('Bearer ', '');
     payload = Jwt.verify(validToken, NODE_ENV ? JWT_SECRET : 'super-secret');
@@ -20,6 +20,10 @@ const auth = (req, res, next) => {
 
     if (error.name === 'TokenExpiredError') {
       return next(ApiError.Unauthorized('Срок действия токена истек'));
+    }
+
+    if (error.message === 'NeedsAutanticate') {
+      return next(ApiError.Unauthorized('Необходима авторизация'));
     }
 
     return new ApiError();
