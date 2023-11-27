@@ -3,33 +3,33 @@ import mongoose from 'mongoose';
 import Card from '../models/Card.js';
 import ApiError from '../utils/ApiError.js';
 
-export const getCards = async (req, res) => {
+export const getCards = async (req, res, next) => {
   try {
     const cards = await Card.find({});
     return res.send(cards);
   } catch (error) {
-    return new ApiError();
+    return next(ApiError());
   }
 };
 
-export const createCard = async (req, res) => {
+export const createCard = async (req, res, next) => {
   try {
     const { name, link } = req.body;
     const newCard = await new Card({ name, link, owner: req.user._id });
     return res.status(StatusCodes.CREATED).send(await newCard.save());
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
-      return new ApiError.BadRequest('Переданы неверные данные');
+      return next(ApiError.BadRequest('Переданы неверные данные'));
     }
-    return new ApiError();
+    return next(ApiError());
   }
 };
 
-export const deleteCard = async (req, res) => {
+export const deleteCard = async (req, res, next) => {
   try {
     const card = await Card.findById(req.params.cardId).orFail();
     if (card.owner.toString() !== req.user._id) {
-      return new ApiError.Forbidden('Автор карточки - другой пользователь');
+      return next(ApiError.Forbidden('Автор карточки - другой пользователь'));
     }
     return Card.deleteOne(card)
       .orFail()
@@ -38,16 +38,16 @@ export const deleteCard = async (req, res) => {
       });
   } catch (error) {
     if (error instanceof mongoose.Error.CastError) {
-      return new ApiError.BadRequest('Переданы неверные данные');
+      return next(ApiError.BadRequest('Переданы неверные данные'));
     }
     if (error instanceof mongoose.Error.DocumentNotFoundError) {
-      return new ApiError.NotFound('Карточка не найдена');
+      return next(ApiError.NotFound('Карточка не найдена'));
     }
-    return new ApiError();
+    return next(ApiError());
   }
 };
 
-export const likeCard = async (req, res) => {
+export const likeCard = async (req, res, next) => {
   try {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
@@ -57,16 +57,16 @@ export const likeCard = async (req, res) => {
     return res.send(card);
   } catch (error) {
     if (error instanceof mongoose.Error.CastError) {
-      return new ApiError.BadRequest('Переданы неверные данные');
+      return next(ApiError.BadRequest('Переданы неверные данные'));
     }
     if (error instanceof mongoose.Error.DocumentNotFoundError) {
-      return new ApiError.NotFound('Карточка не найдена');
+      return next(ApiError.NotFound('Карточка не найдена'));
     }
-    return new ApiError();
+    return next(ApiError());
   }
 };
 
-export const dislikeCard = async (req, res) => {
+export const dislikeCard = async (req, res, next) => {
   try {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
@@ -76,11 +76,11 @@ export const dislikeCard = async (req, res) => {
     return res.send(card);
   } catch (error) {
     if (error instanceof mongoose.Error.CastError) {
-      return new ApiError.BadRequest('Переданы неверные данные');
+      return next(ApiError.BadRequest('Переданы неверные данные'));
     }
     if (error instanceof mongoose.Error.DocumentNotFoundError) {
-      return new ApiError.NotFound('Карточка не найдена');
+      return next(ApiError.NotFound('Карточка не найдена'));
     }
-    return new ApiError();
+    return next(ApiError());
   }
 };

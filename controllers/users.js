@@ -6,7 +6,7 @@ import generateToken from '../utils/jwt.js';
 import { ERROR_CODE_DUPLICATE_MONGO, SALT_ROUNDS } from '../utils/constants.js';
 import ApiError from '../utils/ApiError.js';
 
-export const login = async (req, res) => {
+export const login = async (req, res, next) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email })
@@ -22,14 +22,14 @@ export const login = async (req, res) => {
     return res.send({ token });
   } catch (error) {
     if (error.message === 'NotAutanticate') {
-      return new ApiError.Unauthorized('Неправильные почта или пароль');
+      return next(ApiError.Unauthorized('Неправильные почта или пароль'));
     }
 
-    return new ApiError();
+    return next(ApiError());
   }
 };
 
-export const createUser = async (req, res) => {
+export const createUser = async (req, res, next) => {
   try {
     const newUser = await bcrypt
       .hash(req.body.password, SALT_ROUNDS)
@@ -44,60 +44,60 @@ export const createUser = async (req, res) => {
     });
   } catch (error) {
     if (error instanceof mongoose.Error.ValidationError) {
-      return new ApiError.BadRequest('Переданы неверные данные');
+      return next(ApiError.BadRequest('Переданы неверные данные'));
     }
 
     if (error.code === ERROR_CODE_DUPLICATE_MONGO) {
-      return new ApiError.Conflict('Пользователь уже существует');
+      return next(ApiError.Conflict('Пользователь уже существует'));
     }
 
-    return new ApiError();
+    return next(ApiError());
   }
 };
 
-export const getUsers = async (req, res) => {
+export const getUsers = async (req, res, next) => {
   try {
     const users = await User.find({});
     return res.send(users);
   } catch (error) {
-    return new ApiError();
+    return next(ApiError());
   }
 };
 
-export const getCurrentUser = async (req, res) => {
+export const getCurrentUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id).orFail();
     return res.status(StatusCodes.OK).send(user);
   } catch (error) {
     if (error instanceof mongoose.Error.CastError) {
-      return new ApiError.BadRequest('Переданы неверные данные');
+      return next(ApiError.BadRequest('Переданы неверные данные'));
     }
     if (error instanceof mongoose.Error.DocumentNotFoundError) {
-      return new ApiError.NotFound('Пользователь не найден');
+      return next(ApiError.NotFound('Пользователь не найден'));
     }
 
-    return new ApiError();
+    return next(ApiError());
   }
 };
 
-export const getUserById = async (req, res) => {
+export const getUserById = async (req, res, next) => {
   try {
     const { userId } = req.params;
     const user = await User.findById(userId).orFail();
     return res.status(StatusCodes.OK).send(user);
   } catch (error) {
     if (error instanceof mongoose.Error.CastError) {
-      return new ApiError.BadRequest('Переданы неверные данные');
+      return next(ApiError.BadRequest('Переданы неверные данные'));
     }
     if (error instanceof mongoose.Error.DocumentNotFoundError) {
-      return new ApiError.NotFound('Пользователь не найден');
+      return next(ApiError.NotFound('Пользователь не найден'));
     }
 
-    return new ApiError();
+    return next(ApiError());
   }
 };
 
-export const updateInfoProfile = async (req, res) => {
+export const updateInfoProfile = async (req, res, next) => {
   try {
     const { name, about } = req.body;
     const updatedInfo = await User.findByIdAndUpdate(
@@ -111,17 +111,17 @@ export const updateInfoProfile = async (req, res) => {
     return res.json(updatedInfo);
   } catch (error) {
     if (error instanceof mongoose.Error.DocumentNotFoundError) {
-      return new ApiError.NotFound('Пользователь не найден');
+      return next(ApiError.NotFound('Пользователь не найден'));
     }
     if (error instanceof mongoose.Error.ValidationError) {
-      return new ApiError.BadRequest('Переданы неверные данные');
+      return next(ApiError.BadRequest('Переданы неверные данные'));
     }
 
-    return new ApiError();
+    return next(ApiError());
   }
 };
 
-export const updateAvatarProfile = async (req, res) => {
+export const updateAvatarProfile = async (req, res, next) => {
   try {
     const { avatar } = req.body;
     const updatedInfo = await User.findByIdAndUpdate(
@@ -135,12 +135,12 @@ export const updateAvatarProfile = async (req, res) => {
     return res.json(updatedInfo);
   } catch (error) {
     if (error instanceof mongoose.Error.DocumentNotFoundError) {
-      return new ApiError.NotFound('Пользователь не найден');
+      return next(ApiError.NotFound('Пользователь не найден'));
     }
     if (error instanceof mongoose.Error.ValidationError) {
-      return new ApiError.BadRequest('Переданы неверные данные');
+      return next(ApiError.BadRequest('Переданы неверные данные'));
     }
 
-    return new ApiError();
+    return next(ApiError());
   }
 };
